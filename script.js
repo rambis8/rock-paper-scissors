@@ -1,6 +1,24 @@
 let playerScore = 0;
 let computerScore = 0;
 
+const rockButton = document.getElementById('rock');
+const paperButton = document.getElementById('paper');
+const scissorsButton = document.getElementById('scissors');
+const restartButton = document.getElementById('restart');
+
+const resultDiv = document.getElementById('result');
+const scoreP = document.getElementById('score');
+const winnerP = document.getElementById('winnerP');
+
+restartButton.addEventListener('click', restart);
+
+const playerButtons = [rockButton, paperButton, scissorsButton];
+playerButtons.forEach((button) => {
+    button.addEventListener('click', function () {
+        playRound(button.textContent.toLowerCase(), getComputerChoice());
+    });
+});
+
 function getComputerChoice() {
     let computerChoice = '';
     let number = Math.floor(Math.random() * 3) + 1
@@ -13,7 +31,11 @@ function getComputerChoice() {
 }
 
 function playRound(playerSelection, computerSelection) {
-    playerSelection.toLowerCase();
+    if (playerScore == 5 || computerScore == 5) {
+        alert('The game is over.');
+        restart();
+        return;
+    }
     let result = '';
     if (playerSelection === computerSelection) {
         result = 'Draw. There is no winner.'
@@ -26,27 +48,27 @@ function playRound(playerSelection, computerSelection) {
         result = `You lose, ${computerSelection} beats ${playerSelection}!`
         computerScore++;
     }
-    return result;
-}
-
-function game() {
-    for (i = 0; i < 5; i++) {
-        const playerSelection = 
-            prompt("Make your play (rock, paper, scissors):");
-        if (playerSelection == null) {
-            alert('You have to make a play!');
-            return;
-        }
-        const computerSelection = getComputerChoice();
-        console.log(playRound(playerSelection, computerSelection));
-    }
-    if (playerScore === computerScore) {
-        console.log('Draw! There is no winner after 5 rounds.')
-    } else if (playerScore > computerScore) {
-        console.log('Congratulations, you won!')
-    } else {
-        console.log('You lost! Better luck next time.')
+    const pResult = document.createElement('p');
+    pResult.textContent = result;
+    resultDiv.appendChild(pResult);
+    this.updateScore();
+    if (playerScore == 5 ) {
+        displayWinner('you');
+    } else if (computerScore == 5) {
+        displayWinner('computer');
     }
 }
 
-game();
+function displayWinner(winner) {
+    winnerP.textContent = `The winner is: ${winner}!`;
+}
+
+function updateScore() {
+    scoreP.textContent = `Current score: 
+                    Player: ${playerScore}
+                    Computer: ${computerScore}`;
+}
+
+function restart() {
+    location.reload();
+}
